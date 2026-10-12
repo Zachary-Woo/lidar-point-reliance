@@ -1,7 +1,13 @@
 # When does a LiDAR detector stop relying on the object?
 
 > [!WARNING]
-> **IN PROGRESS.** `weekN_` script names and `DIS Notes and Outputs/outputs by week/` are temporary. Final version will be a shorter streamlined codebase.
+> **IN PROGRESS / TODO.** rough. re-check as things change.
+>
+> - [ ] strip week labeling
+> - [ ] review README — consistency, accuracy (steps keep changing)
+> - [ ] review other READMEs
+> - [ ] review .gitignore
+> - [ ] review code readability, adjust names where needed
 
 A stratified study of evidence dependence in 3D detection confidence.
 
@@ -17,9 +23,11 @@ The git checkout contains the code. It does not contain the KITTI clouds or the 
 wsl --install -d Ubuntu-22.04
 ```
 
-Open the Ubuntu 22.04 terminal for every command after that. Run `nvidia-smi` first. It needs to list a GPU before the rest of this is worth doing.
+That install adds a Linux terminal inside Windows. Windows calls it WSL (Windows Subsystem for Linux). Open **Ubuntu 22.04** from the Start menu. That window is not PowerShell, and it is not File Explorer. It has its own files. `$HOME` in that window is the Linux home folder, not `C:\Users\...`.
 
-Clone this repository onto the Linux filesystem, not under `/mnt/c`. Compiling on the Windows mount is the slow, fragile path.
+Every command after this is typed in the Ubuntu window unless the block is marked PowerShell. Run `nvidia-smi` first. It needs to list a GPU before the rest of this is worth doing.
+
+Clone this repository onto the Linux filesystem.
 
 ```bash
 sudo apt update
@@ -54,10 +62,30 @@ data/data_object_velodyne/training/velodyne/
 data/data_object_velodyne/testing/velodyne/
 ```
 
-Each zip already contains `training/` and `testing/` paths, except the labels zip, which is training only. There is no second download onto Ubuntu. WSL already sees the Windows project under `/mnt/c/`. From the Ubuntu terminal, link those unpacked folders into the Linux checkout. `data/kitti` has to stay where it is, because it already holds `ImageSets`. Link the four content folders into `training/` and `testing/`. Linking `data/kitti` itself onto the Ubuntu `data/kitti` directory does not replace that existing folder, and the loader keeps reading an empty tree.
+Each zip already contains `training/` and `testing/` paths, except the labels zip, which is training only. Leave the unpacked files on Windows. Ubuntu can read them from there. The `C:` drive, inside the Ubuntu window, is spelled `/mnt/c/`. A `D:` drive would be `/mnt/d/`. The rest of the path is the same folders, with `\` turned into `/`.
+
+A Windows folder like this:
+
+```text
+C:\Users\Zachary\Desktop\lidar point reliance\data
+```
+
+is this path in Ubuntu:
+
+```text
+/mnt/c/Users/Zachary/Desktop/lidar point reliance/data
+```
+
+`Zachary` is a stand-in. Use your own Windows username, and use the real folder where the four zips were unpacked. Spaces stay in the path, so it has to be quoted. To have Ubuntu print the spelling for you, paste the Windows path into the Ubuntu window with single quotes:
 
 ```bash
-WIN_DATA="/mnt/c/path/to/this/project/data"
+wslpath -a 'C:\Users\Zachary\Desktop\lidar point reliance\data'
+```
+
+The line it prints is `WIN_DATA` below. The `ln -sfn` lines make shortcuts: the Ubuntu names point at the Windows folders. The files are not copied a second time. `data/kitti` has to stay where it is, because it already holds `ImageSets`. Point the shortcuts at `calib`, `image_2`, `label_2`, and `velodyne` inside `training/` and `testing/`. A shortcut of the whole `data/kitti` folder does not replace that existing folder, and the loader keeps reading an empty tree.
+
+```bash
+WIN_DATA="$(wslpath -a 'C:\Users\Zachary\Desktop\lidar point reliance\data')"
 KITTI="$HOME/lidar-point-reliance/OpenPCDet/data/kitti"
 mkdir -p "$KITTI/training" "$KITTI/testing"
 ln -sfn "$WIN_DATA/data_object_calib/training/calib" "$KITTI/training/calib"
@@ -69,7 +97,7 @@ ln -sfn "$WIN_DATA/data_object_velodyne/training/velodyne" "$KITTI/training/velo
 ln -sfn "$WIN_DATA/data_object_velodyne/testing/velodyne" "$KITTI/testing/velodyne"
 ```
 
-Set `WIN_DATA` to the `/mnt/c/...` path of this project's `data` folder. A machine that has no Windows side can skip the links and unzip the four archives directly in `$KITTI` instead.
+Replace the `C:\Users\Zachary\...` path with yours before running that block. `ls "$WIN_DATA"` should list the four `data_object_*` folders. A machine that has no Windows drive can skip the shortcuts and unzip the four archives directly in `$KITTI` instead.
 
 The tree that has to exist afterward:
 
@@ -98,11 +126,11 @@ Download the KITTI PointPillars weights from the OpenPCDet model zoo. The row is
 
 [https://drive.google.com/file/d/1wMxWTpU1qUoY3DsCH31WJmvJxcjFXKlm/view?usp=sharing](https://drive.google.com/file/d/1wMxWTpU1qUoY3DsCH31WJmvJxcjFXKlm/view?usp=sharing)
 
-The browser will not name the file `pointpillar_7728.pth`. On Windows, rename the download and save it in this project as `OpenPCDet/checkpoints/pointpillar_7728.pth`. That `checkpoints` folder is gitignored. From Ubuntu, link that file into the Linux checkout:
+The browser will not name the file `pointpillar_7728.pth`. On Windows, rename the download and save it in this project as `OpenPCDet/checkpoints/pointpillar_7728.pth`. That `checkpoints` folder is gitignored. From Ubuntu, make a shortcut to that Windows file. This is the same `/mnt/c/` spelling as the data folders above: `C:\Users\Zachary\Desktop\lidar point reliance\OpenPCDet\checkpoints\pointpillar_7728.pth` becomes `/mnt/c/Users/Zachary/Desktop/lidar point reliance/OpenPCDet/checkpoints/pointpillar_7728.pth`. Put your real Windows path inside the quotes.
 
 ```bash
 mkdir -p "$HOME/lidar-point-reliance/OpenPCDet/checkpoints"
-ln -sfn "/mnt/c/path/to/this/project/OpenPCDet/checkpoints/pointpillar_7728.pth" \
+ln -sfn "$(wslpath -a 'C:\Users\Zachary\Desktop\lidar point reliance\OpenPCDet\checkpoints\pointpillar_7728.pth')" \
   "$HOME/lidar-point-reliance/OpenPCDet/checkpoints/pointpillar_7728.pth"
 ```
 
@@ -182,9 +210,24 @@ The public function is still `rotate_iou_gpu_eval`. It now runs the same IoU on 
 
 These commands run on Ubuntu, from `OpenPCDet/tools`, after `conda activate pcdet`.
 
-A run writes the full files to `OpenPCDet/output/` on that Ubuntu checkout. The Windows project does not get that folder. OpenPCDet's own `.gitignore` ignores `output`, so the full files stay out of the git repo. The next script reads them from the Ubuntu folder. The big ones stay there on purpose, including `OpenPCDet/output/week3/per_detection_car.csv`.
+Each script already chooses the short result files. You do not sort or split them yourself. It writes those files into the Ubuntu copy of the repo:
 
-The script then copies the short files into `DIS Notes and Outputs/outputs by week/` inside the same repo as the `OpenPCDet` it ran. Those weekly files are the ones that go into git. If Ubuntu and the Windows folder are two different checkouts, the copy lands in the Ubuntu repo. The Windows folder picks it up when that commit is pulled. The weekly files already in the Windows project were copied across from Ubuntu. Commit from whichever checkout has them.
+```text
+$HOME/lidar-point-reliance/DIS Notes and Outputs/outputs by week/week3-outputs/
+```
+
+The week number matches the script. That folder is on the Linux side, so File Explorer will not show it yet. The Windows project is a different copy of the same folders. After a script finishes, run this once in the Ubuntu window. It copies every weekly folder onto the Windows project. Change the `C:\Users\Zachary\...` path to the real Windows project folder, the same way as the data step above.
+
+```bash
+WIN_PROJECT="$(wslpath -a 'C:\Users\Zachary\Desktop\lidar point reliance')"
+mkdir -p "$WIN_PROJECT/DIS Notes and Outputs/outputs by week"
+cp -a "$HOME/lidar-point-reliance/DIS Notes and Outputs/outputs by week/." \
+  "$WIN_PROJECT/DIS Notes and Outputs/outputs by week/"
+```
+
+Then open the Windows project in File Explorer and go to `DIS Notes and Outputs`, then `outputs by week`, then the week folder. Those are the results. Run the same copy again after a later week. It refreshes the Windows folders.
+
+The script also keeps bigger working files in `OpenPCDet/output/` on Ubuntu, including `OpenPCDet/output/week3/per_detection_car.csv`. Later scripts read that Ubuntu folder. It is not copied to Windows, and OpenPCDet's `.gitignore` keeps it out of git. The weekly folders above are the files that go into the git repo. Commit them from the Windows project after the copy.
 
 Edits to a cloud are in memory. The scripts do not overwrite `training/velodyne` or `result.pkl`.
 
