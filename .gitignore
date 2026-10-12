@@ -12,3 +12,7 @@ DIS Notes and Outputs/todo tracking/
 
 # Weekly update pdfs
 DIS Notes and Outputs/weekly update pdfs/
+
+# OpenPCDet local installer and downloaded weights
+OpenPCDet/checkpoints/
+OpenPCDet/Miniconda3-latest-Linux-x86_64.sh
