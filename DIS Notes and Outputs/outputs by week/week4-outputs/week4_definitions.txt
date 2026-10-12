@@ -1,0 +1,19 @@
+Week 4 baseline definitions
+Sensor range (raw field range_m): horizontal lidar sqrt(x^2+y^2).
+  Bins: 0-20 m, 20-40 m, and 40 m or farther.
+Interior point count (raw field num_points): points_in_boxes_cpu on the full cloud.
+  Bins: 0-19 points, 20-99 points, and 100 or more points.
+Predicted box volume (raw field size_m3): l * w * h in cubic meters.
+  Bins: under 8, 8 to under 12, and 12 or more cubic meters.
+AP: official KITTI 3D AP, Car, overlap 0.7. Quote moderate AP@R11.
+AP slice: GT-side. Cars outside the bin are ignored (occluded=3), detections kept.
+Confidence / ECE slice: prediction-side week-3 rows after score >= 0.1.
+matched_iou07: week-3 stored iou_3d >= 0.7 (not the week-3 0.5 gt_matched flag).
+Reliability: 10 equal-width score bins [0.0, 0.1), ..., [0.9, 1.0].
+accuracy_k = (preds in bin k with iou_3d >= 0.7) / n_k
+conf_k = mean score in bin k
+ECE = sum_{k: n_k>0} (n_k / N) * |accuracy_k - conf_k|
+Empty confidence bins are omitted. N is the number of preds in the slice.
+Confidence histograms: step outlines; each slice is normalized to unit area.
+Size AP is not assumed monotonic. Range and interior-point AP must fall toward the weak bins.
+Detector: pointpillar_7728.pth. result.pkl is the week-1 file.

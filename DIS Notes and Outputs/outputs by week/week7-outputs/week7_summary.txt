@@ -1,0 +1,181 @@
+Week 7 summary
+eligible: 11125 (score >= 0.70, num_points_in_box >= 1)
+eligible by range: 0-20 m 4864, 20-40 m 4868, 40+ m 1393
+eligible gt_matched: 10478
+targets: 11125
+placebo applied: 11125
+placebo unavailable: 0
+seed: 6908
+fractions: 0.00 0.25 0.50 0.75 1.00
+conditions: interior placebo context
+association bar: 0.50
+score survival threshold: 0.50
+eval batch size: 4
+definitions: locked by week 6
+correctness:
+  failures: 0
+  training/velodyne size and mtime unchanged (7481 files); result.pkl unchanged
+decision: correctness passed
+interior | range | 0-20 m  n=4864
+  f=0.00  mean_removed=0.000  mean_retained=1.000000  score_survival=1.000000 (4864/4864)  iou_survival=1.000000 (4864/4864)
+  f=0.25  mean_removed=273.314  mean_retained=0.993974  score_survival=1.000000 (4864/4864)  iou_survival=1.000000 (4864/4864)
+  f=0.50  mean_removed=546.630  mean_retained=0.978567  score_survival=0.998561 (4857/4864)  iou_survival=1.000000 (4864/4864)
+  f=0.75  mean_removed=819.959  mean_retained=0.929401  score_survival=0.975740 (4746/4864)  iou_survival=0.997738 (4853/4864)
+  f=1.00  mean_removed=1093.273  mean_retained=0.192787  score_survival=0.135280 (658/4864)  iou_survival=0.454975 (2213/4864)
+interior | range | 20-40 m  n=4868
+  f=0.00  mean_removed=0.000  mean_retained=1.000000  score_survival=1.000000 (4868/4868)  iou_survival=1.000000 (4868/4868)
+  f=0.25  mean_removed=31.691  mean_retained=0.972656  score_survival=0.996919 (4853/4868)  iou_survival=0.999795 (4867/4868)
+  f=0.50  mean_removed=63.380  mean_retained=0.914287  score_survival=0.965078 (4698/4868)  iou_survival=0.995892 (4848/4868)
+  f=0.75  mean_removed=95.069  mean_retained=0.770018  score_survival=0.815530 (3970/4868)  iou_survival=0.965489 (4700/4868)
+  f=1.00  mean_removed=126.761  mean_retained=0.148687  score_survival=0.103328 (503/4868)  iou_survival=0.346960 (1689/4868)
+interior | range | 40+ m  n=1393
+  f=0.00  mean_removed=0.000  mean_retained=1.000000  score_survival=1.000000 (1393/1393)  iou_survival=1.000000 (1393/1393)
+  f=0.25  mean_removed=8.360  mean_retained=0.951900  score_survival=0.988514 (1377/1393)  iou_survival=0.998564 (1391/1393)
+  f=0.50  mean_removed=16.716  mean_retained=0.849763  score_survival=0.903805 (1259/1393)  iou_survival=0.978464 (1363/1393)
+  f=0.75  mean_removed=25.053  mean_retained=0.618207  score_survival=0.611630 (852/1393)  iou_survival=0.856425 (1193/1393)
+  f=1.00  mean_removed=33.413  mean_retained=0.073874  score_survival=0.038047 (53/1393)  iou_survival=0.180905 (252/1393)
+interior | points | 0-19 points  n=370
+  f=0.00  mean_removed=0.000  mean_retained=1.000000  score_survival=1.000000 (370/370)  iou_survival=1.000000 (370/370)
+  f=0.25  mean_removed=3.692  mean_retained=0.934283  score_survival=0.983784 (364/370)  iou_survival=1.000000 (370/370)
+  f=0.50  mean_removed=7.414  mean_retained=0.777566  score_survival=0.813514 (301/370)  iou_survival=0.962162 (356/370)
+  f=0.75  mean_removed=11.038  mean_retained=0.518675  score_survival=0.445946 (165/370)  iou_survival=0.794595 (294/370)
+  f=1.00  mean_removed=14.730  mean_retained=0.086160  score_survival=0.043243 (16/370)  iou_survival=0.191892 (71/370)
+interior | points | 20-99 points  n=3419
+  f=0.00  mean_removed=0.000  mean_retained=1.000000  score_survival=1.000000 (3419/3419)  iou_survival=1.000000 (3419/3419)
+  f=0.25  mean_removed=13.841  mean_retained=0.956819  score_survival=0.992980 (3395/3419)  iou_survival=0.999123 (3416/3419)
+  f=0.50  mean_removed=27.674  mean_retained=0.870610  score_survival=0.936239 (3201/3419)  iou_survival=0.990348 (3386/3419)
+  f=0.75  mean_removed=41.503  mean_retained=0.666649  score_survival=0.677684 (2317/3419)  iou_survival=0.919567 (3144/3419)
+  f=1.00  mean_removed=55.344  mean_retained=0.098293  score_survival=0.057619 (197/3419)  iou_survival=0.245393 (839/3419)
+interior | points | 100+ points  n=7336
+  f=0.00  mean_removed=0.000  mean_retained=1.000000  score_survival=1.000000 (7336/7336)  iou_survival=1.000000 (7336/7336)
+  f=0.25  mean_removed=197.196  mean_retained=0.992166  score_survival=0.999864 (7335/7336)  iou_survival=1.000000 (7336/7336)
+  f=0.50  mean_removed=394.393  mean_retained=0.971906  score_survival=0.996728 (7312/7336)  iou_survival=0.999591 (7333/7336)
+  f=0.75  mean_removed=591.602  mean_retained=0.907720  score_survival=0.965921 (7086/7336)  iou_survival=0.996183 (7308/7336)
+  f=1.00  mean_removed=788.799  mean_retained=0.190361  score_survival=0.136450 (1001/7336)  iou_survival=0.442203 (3244/7336)
+interior | size | Under 8 m³  n=1299
+  f=0.00  mean_removed=0.000  mean_retained=1.000000  score_survival=1.000000 (1299/1299)  iou_survival=1.000000 (1299/1299)
+  f=0.25  mean_removed=115.878  mean_retained=0.977869  score_survival=0.997691 (1296/1299)  iou_survival=0.998460 (1297/1299)
+  f=0.50  mean_removed=231.768  mean_retained=0.934639  score_survival=0.976135 (1268/1299)  iou_survival=0.995381 (1293/1299)
+  f=0.75  mean_removed=347.669  mean_retained=0.825030  score_survival=0.876059 (1138/1299)  iou_survival=0.968437 (1258/1299)
+  f=1.00  mean_removed=463.547  mean_retained=0.176624  score_survival=0.125481 (163/1299)  iou_survival=0.412625 (536/1299)
+interior | size | 8-12 m³  n=9082
+  f=0.00  mean_removed=0.000  mean_retained=1.000000  score_survival=1.000000 (9082/9082)  iou_survival=1.000000 (9082/9082)
+  f=0.25  mean_removed=138.876  mean_retained=0.978624  score_survival=0.997027 (9055/9082)  iou_survival=0.999890 (9081/9082)
+  f=0.50  mean_removed=277.748  mean_retained=0.932175  score_survival=0.970491 (8814/9082)  iou_survival=0.995486 (9041/9082)
+  f=0.75  mean_removed=416.625  mean_retained=0.817492  score_survival=0.855428 (7769/9082)  iou_survival=0.965426 (8768/9082)
+  f=1.00  mean_removed=555.501  mean_retained=0.154469  score_survival=0.104382 (948/9082)  iou_survival=0.367760 (3340/9082)
+interior | size | 12+ m³  n=744
+  f=0.00  mean_removed=0.000  mean_retained=1.000000  score_survival=1.000000 (744/744)  iou_survival=1.000000 (744/744)
+  f=0.25  mean_removed=112.263  mean_retained=0.991216  score_survival=0.998656 (743/744)  iou_survival=1.000000 (744/744)
+  f=0.50  mean_removed=224.538  mean_retained=0.959828  score_survival=0.983871 (732/744)  iou_survival=0.995968 (741/744)
+  f=0.75  mean_removed=336.782  mean_retained=0.852198  score_survival=0.888441 (661/744)  iou_survival=0.967742 (720/744)
+  f=1.00  mean_removed=449.046  mean_retained=0.177561  score_survival=0.138441 (103/744)  iou_survival=0.373656 (278/744)
+placebo | range | 0-20 m  n=4864
+  f=0.00  mean_removed=0.000  mean_retained=1.000000  score_survival=1.000000 (4864/4864)  iou_survival=1.000000 (4864/4864)
+  f=0.25  mean_removed=68.009  mean_retained=1.000172  score_survival=1.000000 (4864/4864)  iou_survival=1.000000 (4864/4864)
+  f=0.50  mean_removed=136.021  mean_retained=1.000154  score_survival=0.999794 (4863/4864)  iou_survival=0.999794 (4863/4864)
+  f=0.75  mean_removed=204.042  mean_retained=1.000460  score_survival=1.000000 (4864/4864)  iou_survival=1.000000 (4864/4864)
+  f=1.00  mean_removed=272.052  mean_retained=0.999878  score_survival=1.000000 (4864/4864)  iou_survival=1.000000 (4864/4864)
+placebo | range | 20-40 m  n=4868
+  f=0.00  mean_removed=0.000  mean_retained=1.000000  score_survival=1.000000 (4868/4868)  iou_survival=1.000000 (4868/4868)
+  f=0.25  mean_removed=5.505  mean_retained=1.000155  score_survival=1.000000 (4868/4868)  iou_survival=1.000000 (4868/4868)
+  f=0.50  mean_removed=11.020  mean_retained=1.000457  score_survival=1.000000 (4868/4868)  iou_survival=1.000000 (4868/4868)
+  f=0.75  mean_removed=16.536  mean_retained=1.000648  score_survival=1.000000 (4868/4868)  iou_survival=1.000000 (4868/4868)
+  f=1.00  mean_removed=22.041  mean_retained=0.999804  score_survival=0.999589 (4866/4868)  iou_survival=0.999795 (4867/4868)
+placebo | range | 40+ m  n=1393
+  f=0.00  mean_removed=0.000  mean_retained=1.000000  score_survival=1.000000 (1393/1393)  iou_survival=1.000000 (1393/1393)
+  f=0.25  mean_removed=1.147  mean_retained=0.999866  score_survival=1.000000 (1393/1393)  iou_survival=1.000000 (1393/1393)
+  f=0.50  mean_removed=2.310  mean_retained=1.000003  score_survival=1.000000 (1393/1393)  iou_survival=1.000000 (1393/1393)
+  f=0.75  mean_removed=3.523  mean_retained=0.997882  score_survival=0.998564 (1391/1393)  iou_survival=0.998564 (1391/1393)
+  f=1.00  mean_removed=4.670  mean_retained=0.999421  score_survival=1.000000 (1393/1393)  iou_survival=1.000000 (1393/1393)
+placebo | points | 0-19 points  n=370
+  f=0.00  mean_removed=0.000  mean_retained=1.000000  score_survival=1.000000 (370/370)  iou_survival=1.000000 (370/370)
+  f=0.25  mean_removed=0.754  mean_retained=0.999846  score_survival=1.000000 (370/370)  iou_survival=1.000000 (370/370)
+  f=0.50  mean_removed=1.543  mean_retained=0.999974  score_survival=1.000000 (370/370)  iou_survival=1.000000 (370/370)
+  f=0.75  mean_removed=2.354  mean_retained=0.999506  score_survival=1.000000 (370/370)  iou_survival=1.000000 (370/370)
+  f=1.00  mean_removed=3.108  mean_retained=1.000407  score_survival=1.000000 (370/370)  iou_survival=1.000000 (370/370)
+placebo | points | 20-99 points  n=3419
+  f=0.00  mean_removed=0.000  mean_retained=1.000000  score_survival=1.000000 (3419/3419)  iou_survival=1.000000 (3419/3419)
+  f=0.25  mean_removed=2.955  mean_retained=1.000039  score_survival=1.000000 (3419/3419)  iou_survival=1.000000 (3419/3419)
+  f=0.50  mean_removed=5.920  mean_retained=1.000321  score_survival=1.000000 (3419/3419)  iou_survival=1.000000 (3419/3419)
+  f=0.75  mean_removed=8.904  mean_retained=0.999769  score_survival=0.999415 (3417/3419)  iou_survival=0.999415 (3417/3419)
+  f=1.00  mean_removed=11.859  mean_retained=0.999578  score_survival=0.999415 (3417/3419)  iou_survival=0.999708 (3418/3419)
+placebo | points | 100+ points  n=7336
+  f=0.00  mean_removed=0.000  mean_retained=1.000000  score_survival=1.000000 (7336/7336)  iou_survival=1.000000 (7336/7336)
+  f=0.25  mean_removed=47.548  mean_retained=1.000182  score_survival=1.000000 (7336/7336)  iou_survival=1.000000 (7336/7336)
+  f=0.50  mean_removed=95.100  mean_retained=1.000258  score_survival=0.999864 (7335/7336)  iou_survival=0.999864 (7335/7336)
+  f=0.75  mean_removed=142.660  mean_retained=1.000465  score_survival=1.000000 (7336/7336)  iou_survival=1.000000 (7336/7336)
+  f=1.00  mean_removed=190.208  mean_retained=0.999855  score_survival=1.000000 (7336/7336)  iou_survival=1.000000 (7336/7336)
+placebo | size | Under 8 m³  n=1299
+  f=0.00  mean_removed=0.000  mean_retained=1.000000  score_survival=1.000000 (1299/1299)  iou_survival=1.000000 (1299/1299)
+  f=0.25  mean_removed=28.196  mean_retained=1.000126  score_survival=1.000000 (1299/1299)  iou_survival=1.000000 (1299/1299)
+  f=0.50  mean_removed=56.385  mean_retained=1.000183  score_survival=1.000000 (1299/1299)  iou_survival=1.000000 (1299/1299)
+  f=0.75  mean_removed=84.581  mean_retained=0.999419  score_survival=0.999230 (1298/1299)  iou_survival=0.999230 (1298/1299)
+  f=1.00  mean_removed=112.778  mean_retained=0.999466  score_survival=1.000000 (1299/1299)  iou_survival=1.000000 (1299/1299)
+placebo | size | 8-12 m³  n=9082
+  f=0.00  mean_removed=0.000  mean_retained=1.000000  score_survival=1.000000 (9082/9082)  iou_survival=1.000000 (9082/9082)
+  f=0.25  mean_removed=33.268  mean_retained=1.000123  score_survival=1.000000 (9082/9082)  iou_survival=1.000000 (9082/9082)
+  f=0.50  mean_removed=66.543  mean_retained=1.000235  score_survival=0.999890 (9081/9082)  iou_survival=0.999890 (9081/9082)
+  f=0.75  mean_removed=99.829  mean_retained=1.000265  score_survival=0.999890 (9081/9082)  iou_survival=0.999890 (9081/9082)
+  f=1.00  mean_removed=133.097  mean_retained=0.999848  score_survival=0.999780 (9080/9082)  iou_survival=0.999890 (9081/9082)
+placebo | size | 12+ m³  n=744
+  f=0.00  mean_removed=0.000  mean_retained=1.000000  score_survival=1.000000 (744/744)  iou_survival=1.000000 (744/744)
+  f=0.25  mean_removed=27.461  mean_retained=1.000172  score_survival=1.000000 (744/744)  iou_survival=1.000000 (744/744)
+  f=0.50  mean_removed=54.944  mean_retained=1.000820  score_survival=1.000000 (744/744)  iou_survival=1.000000 (744/744)
+  f=0.75  mean_removed=82.454  mean_retained=1.001061  score_survival=1.000000 (744/744)  iou_survival=1.000000 (744/744)
+  f=1.00  mean_removed=109.915  mean_retained=0.999627  score_survival=1.000000 (744/744)  iou_survival=1.000000 (744/744)
+context | range | 0-20 m  n=4864
+  f=0.00  mean_removed=0.000  mean_retained=1.000000  score_survival=1.000000 (4864/4864)  iou_survival=1.000000 (4864/4864)
+  f=0.25  mean_removed=28992.449  mean_retained=0.998809  score_survival=1.000000 (4864/4864)  iou_survival=1.000000 (4864/4864)
+  f=0.50  mean_removed=57984.912  mean_retained=0.995098  score_survival=1.000000 (4864/4864)  iou_survival=1.000000 (4864/4864)
+  f=0.75  mean_removed=86977.369  mean_retained=0.988796  score_survival=0.998766 (4858/4864)  iou_survival=1.000000 (4864/4864)
+  f=1.00  mean_removed=115969.817  mean_retained=1.018223  score_survival=0.996094 (4845/4864)  iou_survival=0.997327 (4851/4864)
+context | range | 20-40 m  n=4868
+  f=0.00  mean_removed=0.000  mean_retained=1.000000  score_survival=1.000000 (4868/4868)  iou_survival=1.000000 (4868/4868)
+  f=0.25  mean_removed=29433.308  mean_retained=0.993744  score_survival=0.999795 (4867/4868)  iou_survival=1.000000 (4868/4868)
+  f=0.50  mean_removed=58866.622  mean_retained=0.984445  score_survival=0.999795 (4867/4868)  iou_survival=1.000000 (4868/4868)
+  f=0.75  mean_removed=88299.927  mean_retained=0.976414  score_survival=0.996097 (4849/4868)  iou_survival=0.999795 (4867/4868)
+  f=1.00  mean_removed=117733.234  mean_retained=1.044974  score_survival=0.997535 (4856/4868)  iou_survival=0.997946 (4858/4868)
+context | range | 40+ m  n=1393
+  f=0.00  mean_removed=0.000  mean_retained=1.000000  score_survival=1.000000 (1393/1393)  iou_survival=1.000000 (1393/1393)
+  f=0.25  mean_removed=29555.913  mean_retained=0.988124  score_survival=0.999282 (1392/1393)  iou_survival=0.999282 (1392/1393)
+  f=0.50  mean_removed=59111.811  mean_retained=0.967796  score_survival=0.994975 (1386/1393)  iou_survival=0.999282 (1392/1393)
+  f=0.75  mean_removed=88667.740  mean_retained=0.936197  score_survival=0.980617 (1366/1393)  iou_survival=0.998564 (1391/1393)
+  f=1.00  mean_removed=118223.653  mean_retained=1.046356  score_survival=0.997128 (1389/1393)  iou_survival=0.998564 (1391/1393)
+context | points | 0-19 points  n=370
+  f=0.00  mean_removed=0.000  mean_retained=1.000000  score_survival=1.000000 (370/370)  iou_survival=1.000000 (370/370)
+  f=0.25  mean_removed=29734.649  mean_retained=0.980044  score_survival=0.997297 (369/370)  iou_survival=0.997297 (369/370)
+  f=0.50  mean_removed=59469.300  mean_retained=0.945676  score_survival=0.983784 (364/370)  iou_survival=0.997297 (369/370)
+  f=0.75  mean_removed=89203.973  mean_retained=0.907134  score_survival=0.959459 (355/370)  iou_survival=0.997297 (369/370)
+  f=1.00  mean_removed=118938.622  mean_retained=1.014272  score_survival=0.986486 (365/370)  iou_survival=0.991892 (367/370)
+context | points | 20-99 points  n=3419
+  f=0.00  mean_removed=0.000  mean_retained=1.000000  score_survival=1.000000 (3419/3419)  iou_survival=1.000000 (3419/3419)
+  f=0.25  mean_removed=29422.726  mean_retained=0.990293  score_survival=1.000000 (3419/3419)  iou_survival=1.000000 (3419/3419)
+  f=0.50  mean_removed=58845.453  mean_retained=0.975158  score_survival=0.999415 (3417/3419)  iou_survival=1.000000 (3419/3419)
+  f=0.75  mean_removed=88268.185  mean_retained=0.956268  score_survival=0.991226 (3389/3419)  iou_survival=0.999415 (3417/3419)
+  f=1.00  mean_removed=117690.911  mean_retained=1.058730  score_survival=0.997660 (3411/3419)  iou_survival=0.998245 (3413/3419)
+context | points | 100+ points  n=7336
+  f=0.00  mean_removed=0.000  mean_retained=1.000000  score_survival=1.000000 (7336/7336)  iou_survival=1.000000 (7336/7336)
+  f=0.25  mean_removed=29154.019  mean_retained=0.998335  score_survival=0.999864 (7335/7336)  iou_survival=1.000000 (7336/7336)
+  f=0.50  mean_removed=58308.047  mean_retained=0.994631  score_survival=1.000000 (7336/7336)  iou_survival=1.000000 (7336/7336)
+  f=0.75  mean_removed=87462.068  mean_retained=0.989871  score_survival=0.999046 (7329/7336)  iou_survival=1.000000 (7336/7336)
+  f=1.00  mean_removed=116616.087  mean_retained=1.022637  score_survival=0.997001 (7314/7336)  iou_survival=0.997819 (7320/7336)
+context | size | Under 8 m³  n=1299
+  f=0.00  mean_removed=0.000  mean_retained=1.000000  score_survival=1.000000 (1299/1299)  iou_survival=1.000000 (1299/1299)
+  f=0.25  mean_removed=29322.494  mean_retained=0.994537  score_survival=0.999230 (1298/1299)  iou_survival=1.000000 (1299/1299)
+  f=0.50  mean_removed=58645.005  mean_retained=0.987437  score_survival=1.000000 (1299/1299)  iou_survival=1.000000 (1299/1299)
+  f=0.75  mean_removed=87967.513  mean_retained=0.978414  score_survival=0.998460 (1297/1299)  iou_survival=1.000000 (1299/1299)
+  f=1.00  mean_removed=117290.007  mean_retained=1.031665  score_survival=0.997691 (1296/1299)  iou_survival=0.998460 (1297/1299)
+context | size | 8-12 m³  n=9082
+  f=0.00  mean_removed=0.000  mean_retained=1.000000  score_survival=1.000000 (9082/9082)  iou_survival=1.000000 (9082/9082)
+  f=0.25  mean_removed=29244.325  mean_retained=0.994934  score_survival=0.999890 (9081/9082)  iou_survival=0.999890 (9081/9082)
+  f=0.50  mean_removed=58488.653  mean_retained=0.986170  score_survival=0.999229 (9075/9082)  iou_survival=0.999890 (9081/9082)
+  f=0.75  mean_removed=87732.981  mean_retained=0.974902  score_survival=0.994715 (9034/9082)  iou_survival=0.999670 (9079/9082)
+  f=1.00  mean_removed=116977.305  mean_retained=1.031955  score_survival=0.997027 (9055/9082)  iou_survival=0.998018 (9064/9082)
+context | size | 12+ m³  n=744
+  f=0.00  mean_removed=0.000  mean_retained=1.000000  score_survival=1.000000 (744/744)  iou_survival=1.000000 (744/744)
+  f=0.25  mean_removed=29281.081  mean_retained=1.000424  score_survival=1.000000 (744/744)  iou_survival=1.000000 (744/744)
+  f=0.50  mean_removed=58562.185  mean_retained=0.996642  score_survival=0.998656 (743/744)  iou_survival=1.000000 (744/744)
+  f=0.75  mean_removed=87843.276  mean_retained=0.997028  score_survival=0.997312 (742/744)  iou_survival=1.000000 (744/744)
+  f=1.00  mean_removed=117124.356  mean_retained=1.054831  score_survival=0.993280 (739/744)  iou_survival=0.993280 (739/744)
+joint rates: week7_table.csv

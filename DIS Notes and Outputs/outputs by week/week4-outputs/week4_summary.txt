@@ -1,0 +1,29 @@
+Week 4 baseline summary
+unstratified Car 3D AP@R11 easy/mod/hard: 86.4659 / 77.2898 / 74.6573
+unstratified Car 3D AP@R40 easy/mod/hard: 87.7581 / 78.3988 / 75.1863
+primary unstratified number: moderate 3D AP@R11 = 77.2898 (target 77.2898)
+
+AP@R11 moderate by GT bin:
+  sensor range 0-20 m  n_gt=5274  AP@R11 mod=87.8298  (easy=88.3301 hard=85.3593)  R40 mod=90.9276
+  sensor range 20-40 m  n_gt=5858  AP@R11 mod=72.1397  (easy=73.9628 hard=67.8733)  R40 mod=72.5658
+  sensor range 40+ m  n_gt=3253  AP@R11 mod=14.0610  (easy=0.0000 hard=13.1798)  R40 mod=13.6010
+  interior point count 0-19 points  n_gt=2161  AP@R11 mod=2.2102  (easy=0.0000 hard=2.3138)  R40 mod=1.9665
+  interior point count 20-99 points  n_gt=4457  AP@R11 mod=49.5029  (easy=23.8096 hard=49.0958)  R40 mod=46.9745
+  interior point count 100+ points  n_gt=7767  AP@R11 mod=87.5086  (easy=88.1206 hard=86.4639)  R40 mod=89.4990
+  predicted box volume Under 8 m³  n_gt=2358  AP@R11 mod=69.1815  (easy=81.7191 hard=61.2603)  R40 mod=69.7180
+  predicted box volume 8-12 m³  n_gt=10781  AP@R11 mod=76.8579  (easy=87.5191 hard=75.3040)  R40 mod=78.1410
+  predicted box volume 12+ m³  n_gt=1246  AP@R11 mod=29.0127  (easy=33.9695 hard=26.4260)  R40 mod=24.6749
+
+Prediction-side confidence / ECE after score >= 0.1 (match at 3D IoU >= 0.7):
+  All Car predictions  n=33133  matched@0.7=10718  mean_score=0.4723  ECE=0.1488
+  0-20 m  n=6987  matched@0.7=4721  mean_score=0.7287  ECE=0.0636
+  20-40 m  n=12109  matched@0.7=4688  mean_score=0.5275  ECE=0.1404
+  40+ m  n=14037  matched@0.7=1309  mean_score=0.2971  ECE=0.2039
+  0-19 points  n=13506  matched@0.7=560  mean_score=0.2419  ECE=0.2004
+  20-99 points  n=9922  matched@0.7=3085  mean_score=0.4950  ECE=0.1841
+  100+ points  n=9705  matched@0.7=7073  mean_score=0.7698  ECE=0.0451
+  Under 8 m³  n=2536  matched@0.7=1237  mean_score=0.6150  ECE=0.1310
+  8-12 m³  n=27590  matched@0.7=8826  mean_score=0.4672  ECE=0.1475
+  12+ m³  n=3007  matched@0.7=655  mean_score=0.3994  ECE=0.1815
+no bins were merged; every GT bin had at least 100 Cars
+Predicted box volume 12+ m³ AP is below the typical-volume bin; edges were not retuned

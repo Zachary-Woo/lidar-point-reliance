@@ -1,0 +1,143 @@
+What I did so far (Week 1):
+
+1. Cloned the github repo for: OpenPCDet - https://github.com/open-mmlab/OpenPCDet
+
+2. Downloaded the following datasets from KITTI Vision Benchmarks: https://www.cvlibs.net/datasets/kitti/eval_object.php?obj_benchmark=3d
+- Calib: Download camera calibration matrices of object data set (16 MB)
+- Image 2: Download left color images of object data set (12 GB)
+- Label 2: Download training labels of object data set (5 MB)
+- Velodyne: Download Velodyne point clouds, if you want to use laser information (29 GB)
+
+3. Setup env for running the detector
+
+First WSL install was `wsl --install -d Ubuntu` (Ubuntu 26.04, user zackw). 4090 visible in nvidia-smi. Miniconda + env pcdet, python 3.9, torch 2.1.2+cu121, spconv-cu121, cloned ~/OpenPCDet, linked Windows kitti + pointpillar_7728.pth. Compile failed: glibc 2.41 vs CUDA math_functions.h (cospi/sinpi/rsqrt noexcept mismatch). Tried gcc-12, conda nvcc 12.1, bump to CUDA 12.8, pip install -e . --no-build-isolation, and a math_functions.h patch. None of it worked. Unregistered that distro and switched to Ubuntu-22.04.
+
+
+--- Ubuntu 22.04 (this is the working install) ---
+
+PowerShell:
+wsl --install -d Ubuntu-22.04
+
+Ubuntu 22.04 terminal (user zwood, before the pcdet env):
+nvidia-smi
+sudo apt update
+sudo apt install -y build-essential wget git
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+bash Miniconda3-latest-Linux-x86_64.sh -b -p $HOME/miniconda3
+source $HOME/miniconda3/etc/profile.d/conda.sh
+conda init bash
+source ~/.bashrc
+conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main
+conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r
+conda create -n pcdet python=3.9 -y
+conda activate pcdet
+
+pcdet env (after conda activate pcdet):
+python --version
+pip install "numpy==1.26.4"
+pip install torch==2.1.2 torchvision==0.16.2 --index-url https://download.pytorch.org/whl/cu121
+pip install spconv-cu121
+conda install -c nvidia cuda-nvcc=12.1.105 cuda-cudart-dev=12.1.105 -y
+export CUDA_HOME=$CONDA_PREFIX
+export PATH=$CUDA_HOME/bin:$PATH
+nvcc --version
+git clone https://github.com/open-mmlab/OpenPCDet.git ~/OpenPCDet
+mkdir -p ~/OpenPCDet/data ~/OpenPCDet/checkpoints
+ln -s "/mnt/c/Users/zackw/OneDrive/Desktop/DirectedIndipendentStudy/OpenPCDet/data/kitti" ~/OpenPCDet/data/kitti
+ln -s "/mnt/c/Users/zackw/OneDrive/Desktop/DirectedIndipendentStudy/OpenPCDet/checkpoints/pointpillar_7728.pth" ~/OpenPCDet/checkpoints/pointpillar_7728.pth
+cd ~/OpenPCDet
+pip install -r requirements.txt
+pip install "numpy==1.26.4"
+pip install -e . --no-build-isolation
+CONDA_OVERRIDE_CUDA=12.1 conda install -c nvidia/label/cuda-12.1.0 cuda-libraries-dev
+export CUDA_HOME="$CONDA_PREFIX"
+export LIBRARY_PATH="$CONDA_PREFIX/lib:${CONDA_PREFIX}/targets/x86_64-linux/lib:${LIBRARY_PATH}"
+export CPATH="$CONDA_PREFIX/include:${CONDA_PREFIX}/targets/x86_64-linux/include:${CPATH}"
+cd ~/OpenPCDet
+pip install -e . --no-build-isolation > ~/pcdet-build.log 2>&1
+grep -n -E "error:|cannot find|FAILED|fatal error" ~/pcdet-build.log | grep -v -E "deprecated|note: declared" | head -40
+tail -40 ~/pcdet-build.log
+pip show pcdet
+python -c "import pcdet; print(pcdet.__version__); print(pcdet.__file__)"
+
+output of pip show pcdet:
+Name: pcdet
+Version: 0.6.0+233f849
+Summary: OpenPCDet is a general codebase for 3D object detection from point cloud
+Home-page:
+Author: Shaoshuai Shi
+Author-email: shaoshuaics@gmail.com
+License: Apache License 2.0
+Location: /home/zwood/miniconda3/envs/pcdet/lib/python3.9/site-packages
+Editable project location: /home/zwood/OpenPCDet
+Requires: easydict, llvmlite, numba, numpy, pyyaml, scikit-image, SharedArray, tensorboardX, tqdm
+Required-by:
+
+output of python -c "import pcdet; print(pcdet.__version__); print(pcdet.__file__)":
+0.6.0+233f849
+/home/zwood/OpenPCDet/pcdet/__init__.py
+
+---------------------------------------------------------------------------------------------------------------
+
+Encountered a pakag requirement:
+pip install av2==0.2.0
+pip install "kornia==0.5.8" --no-deps
+
+create_kitti_infos died on assert img_file.exists(). Ubuntu clone at ~/OpenPCDet only has GitHub's data/kitti (ImageSets). The KITTI zips live on Windows at DirectedIndipendentStudy/data/data_object_*. The earlier ln -s of OpenPCDet/data/kitti did not replace the repo folder, so it kept reading the empty internal tree. Linked the four extracted folders into ~/OpenPCDet/data/kitti/training and testing (calib, image_2, label_2, velodyne). image_2 count from WSL: 7481. Then rerun create_kitti_infos.
+
+python -m pcdet.datasets.kitti.kitti_dataset create_kitti_infos tools/cfgs/dataset_configs/kitti_dataset.yaml
+
+ls ~/OpenPCDet/data/kitti/kitti_infos_val.pkl
+
+ls ~/OpenPCDet/checkpoints/pointpillar_7728.pth
+
+cd ~/OpenPCDet/tools
+
+python test.py --cfg_file cfgs/kitti_models/pointpillar.yaml --batch_size 4 --ckpt ~/OpenPCDet/checkpoints/pointpillar_7728.pth
+
+Week 1 correctness check: run the pretrained PointPillars checkpoint on KITTI val (no training). Inference finished (3769 samples, checkpoint 127/127 loaded, wrote result.pkl) then crashed with Segmentation fault during official KITTI AP scoring. The dtype tensor line was only a warning. The real failure was the grader, not the detector.
+
+Root cause: OpenPCDet's stock eval uses numba.cuda in
+OpenPCDet/pcdet/datasets/kitti/kitti_object_eval_python/rotate_iou.py
+That CUDA IoU kernel segfaults on this WSL setup even though torch CUDA works. Confirmed with:
+python -c "from pcdet.datasets.kitti.kitti_object_eval_python.rotate_iou import rotate_iou_gpu_eval; import numpy as np; a=np.array([[0,0,1,1,0]], dtype=np.float32); print(rotate_iou_gpu_eval(a, a))"
+-> Segmentation fault
+
+Fix: rewrote rotate_iou.py on Windows to keep the same public API (rotate_iou_gpu_eval) but compute rotated-box IoU with CPU numba instead of numba.cuda. This is an eval-only change for our system; the detector weights and inference path were not rewritten. Copied the fixed file into the Ubuntu clone:
+
+cp "/mnt/c/Users/zackw/OneDrive/Desktop/DirectedIndipendentStudy/OpenPCDet/pcdet/datasets/kitti/kitti_object_eval_python/rotate_iou.py" ~/OpenPCDet/pcdet/datasets/kitti/kitti_object_eval_python/rotate_iou.py
+
+python -c "from pcdet.datasets.kitti.kitti_object_eval_python.rotate_iou import rotate_iou_gpu_eval; import numpy as np; a=np.array([[0,0,1,1,0]], dtype=np.float32); print(rotate_iou_gpu_eval(a, a))"
+-> [[1.]]
+
+Then scored the already-saved predictions (no second detector pass) from tools/:
+
+python <<'EOF'
+import pickle
+from pathlib import Path
+from pcdet.config import cfg, cfg_from_yaml_file
+from pcdet.datasets.kitti.kitti_dataset import KittiDataset
+
+cfg_from_yaml_file('cfgs/kitti_models/pointpillar.yaml', cfg)
+dataset = KittiDataset(
+    dataset_cfg=cfg.DATA_CONFIG,
+    class_names=cfg.CLASS_NAMES,
+    root_path=Path('../data/kitti'),
+    training=False,
+    logger=None,
+)
+det_annos = pickle.load(open(
+    '../output/kitti_models/pointpillar/default/eval/epoch_7728/val/default/result.pkl',
+    'rb',
+))
+result_str, result_dict = dataset.evaluation(
+    det_annos, cfg.CLASS_NAMES, eval_metric='kitti',
+)
+print(result_str)
+EOF
+
+Result (compare R11 moderate to published 77.28; do not compare R40 to 77.28):
+Car AP@0.70, 0.70, 0.70:
+3d   AP:86.4659, 77.2898, 74.6573
+Car moderate 3D AP@R11 = 77.2898 (published OpenPCDet PointPillars = 77.28). Pass.
+NumbaPerformanceWarning about parallel=True in eval.py is harmless; not an error.

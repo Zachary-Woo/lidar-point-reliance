@@ -1,0 +1,21 @@
+Week 5 intervention sidecar
+seed: 6908
+fractions: 0.00, 0.25, 0.50, 0.75, 1.00
+num_removed: Python round(fraction * num_points_before), half even
+operation: Removal and thinning are the same random delete of interior points. Farthest-point and voxel-wise stay week 12.
+association: highest 3D IoU of a new Car box to the original predicted box
+iou helper: d3_box_overlap on KITTI camera boxes
+association bar: 0.50 (week-3 match bar, not official AP 0.7)
+sensor range (raw field range_m): horizontal lidar sqrt(x^2+y^2)
+interior mask: points_in_boxes_cpu on the full velodyne cloud
+fov: n_deleted_in_fov is informational. The mask is not FOV-filtered.
+detector: pointpillar_7728.pth through the PointPillars evaluation path
+source predictions: post-processed detector outputs after score >= 0.1
+no confidence survival threshold this week
+targets:
+  near_dense frame_id=005560 pred_idx=0 score=0.9892 range_m=17.4260 num_points=302 gt_matched=true
+  far frame_id=002828 pred_idx=0 score=0.9605 range_m=41.4927 num_points=46 gt_matched=true
+  sparse frame_id=007032 pred_idx=1 score=0.9465 range_m=45.9705 num_points=19 gt_matched=true
+  empty_box frame_id=007260 pred_idx=8 score=0.5264 range_m=34.9813 num_points=0 gt_matched=false
+  mid frame_id=001116 pred_idx=3 score=0.8216 range_m=37.0513 num_points=45 gt_matched=true
+filter notes: every slot matched its filter

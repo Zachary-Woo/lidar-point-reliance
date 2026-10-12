@@ -1,0 +1,43 @@
+Week 6 pilot summary
+eligible: 11125 (score >= 0.70, num_points_in_box >= 1)
+eligible by range: 0-20 m 4864, 20-40 m 4868, 40+ m 1393
+eligible gt_matched: 10478
+pilot: 200
+pilot by range: 0-20 m 67, 20-40 m 67, 40+ m 66
+pilot gt_matched: 180
+forwards: 1000
+seed: 6908
+fractions: 0.00 0.25 0.50 0.75 1.00
+association bar: 0.50
+score survival threshold: 0.50
+eval batch size: 4
+correctness:
+  failures: 0
+  training/velodyne size and mtime unchanged (7481 files); result.pkl unchanged
+range bin 0-20 m  n=67
+  f=0.00  mean_retained=1.000000  score_survival=1.000000 (67/67)  iou_survival=1.000000 (67/67)
+  f=0.25  mean_retained=0.998132  score_survival=1.000000 (67/67)  iou_survival=1.000000 (67/67)
+  f=0.50  mean_retained=0.982288  score_survival=1.000000 (67/67)  iou_survival=1.000000 (67/67)
+  f=0.75  mean_retained=0.925407  score_survival=0.970149 (65/67)  iou_survival=0.985075 (66/67)
+  f=1.00  mean_retained=0.207108  score_survival=0.119403 (8/67)  iou_survival=0.522388 (35/67)
+range bin 20-40 m  n=67
+  f=0.00  mean_retained=1.000000  score_survival=1.000000 (67/67)  iou_survival=1.000000 (67/67)
+  f=0.25  mean_retained=0.971267  score_survival=1.000000 (67/67)  iou_survival=1.000000 (67/67)
+  f=0.50  mean_retained=0.908176  score_survival=0.940299 (63/67)  iou_survival=1.000000 (67/67)
+  f=0.75  mean_retained=0.736628  score_survival=0.761194 (51/67)  iou_survival=0.940299 (63/67)
+  f=1.00  mean_retained=0.098395  score_survival=0.044776 (3/67)  iou_survival=0.268657 (18/67)
+range bin 40+ m  n=66
+  f=0.00  mean_retained=1.000000  score_survival=1.000000 (66/66)  iou_survival=1.000000 (66/66)
+  f=0.25  mean_retained=0.953075  score_survival=1.000000 (66/66)  iou_survival=1.000000 (66/66)
+  f=0.50  mean_retained=0.863453  score_survival=0.893939 (59/66)  iou_survival=0.984848 (65/66)
+  f=0.75  mean_retained=0.626461  score_survival=0.606061 (40/66)  iou_survival=0.848485 (56/66)
+  f=1.00  mean_retained=0.086478  score_survival=0.045455 (3/66)  iou_survival=0.227273 (15/66)
+comparisons:
+  0-20 m mean_retained f1=0.207108 f0=1.000000 lower=true
+  0-20 m score_survival f1=0.119403 f0=1.000000 lower=true
+  20-40 m mean_retained f1=0.098395 f0=1.000000 lower=true
+  20-40 m score_survival f1=0.044776 f0=1.000000 lower=true
+  40+ m mean_retained f1=0.086478 f0=1.000000 lower=true
+  40+ m score_survival f1=0.045455 f0=1.000000 lower=true
+decision: GO
+failed: none

@@ -1,0 +1,155 @@
+Week 5 correctness checks
+PASS near_dense 005560 pred 0 f=0.00 num_points_before matches week-3 CSV
+PASS near_dense 005560 pred 0 f=0.00 num_points_after = before - removed
+PASS near_dense 005560 pred 0 f=0.00 deleted indices are inside the target
+PASS near_dense 005560 pred 0 f=0.00 outside points unchanged
+PASS near_dense 005560 pred 0 f=0.00 other cars change only by shared target points
+PASS near_dense 005560 pred 0 f=0.00 f=0 cloud identical and num_removed=0
+PASS near_dense 005560 pred 0 f=0.25 num_points_before matches week-3 CSV
+PASS near_dense 005560 pred 0 f=0.25 num_points_after = before - removed
+PASS near_dense 005560 pred 0 f=0.25 deleted indices are inside the target
+PASS near_dense 005560 pred 0 f=0.25 outside points unchanged
+PASS near_dense 005560 pred 0 f=0.25 other cars change only by shared target points
+PASS near_dense 005560 pred 0 f=0.50 num_points_before matches week-3 CSV
+PASS near_dense 005560 pred 0 f=0.50 num_points_after = before - removed
+PASS near_dense 005560 pred 0 f=0.50 deleted indices are inside the target
+PASS near_dense 005560 pred 0 f=0.50 outside points unchanged
+PASS near_dense 005560 pred 0 f=0.50 other cars change only by shared target points
+PASS near_dense 005560 pred 0 f=0.75 num_points_before matches week-3 CSV
+PASS near_dense 005560 pred 0 f=0.75 num_points_after = before - removed
+PASS near_dense 005560 pred 0 f=0.75 deleted indices are inside the target
+PASS near_dense 005560 pred 0 f=0.75 outside points unchanged
+PASS near_dense 005560 pred 0 f=0.75 other cars change only by shared target points
+PASS near_dense 005560 pred 0 f=1.00 num_points_before matches week-3 CSV
+PASS near_dense 005560 pred 0 f=1.00 num_points_after = before - removed
+PASS near_dense 005560 pred 0 f=1.00 deleted indices are inside the target
+PASS near_dense 005560 pred 0 f=1.00 outside points unchanged
+PASS near_dense 005560 pred 0 f=1.00 other cars change only by shared target points
+PASS near_dense 005560 pred 0 f=1.00 f=1 interior count is 0
+PASS near_dense 005560 pred 0 f=0.50 delete indices match on a second draw
+PASS far 002828 pred 0 f=0.00 num_points_before matches week-3 CSV
+PASS far 002828 pred 0 f=0.00 num_points_after = before - removed
+PASS far 002828 pred 0 f=0.00 deleted indices are inside the target
+PASS far 002828 pred 0 f=0.00 outside points unchanged
+PASS far 002828 pred 0 f=0.00 other cars change only by shared target points
+PASS far 002828 pred 0 f=0.00 f=0 cloud identical and num_removed=0
+PASS far 002828 pred 0 f=0.25 num_points_before matches week-3 CSV
+PASS far 002828 pred 0 f=0.25 num_points_after = before - removed
+PASS far 002828 pred 0 f=0.25 deleted indices are inside the target
+PASS far 002828 pred 0 f=0.25 outside points unchanged
+PASS far 002828 pred 0 f=0.25 other cars change only by shared target points
+PASS far 002828 pred 0 f=0.50 num_points_before matches week-3 CSV
+PASS far 002828 pred 0 f=0.50 num_points_after = before - removed
+PASS far 002828 pred 0 f=0.50 deleted indices are inside the target
+PASS far 002828 pred 0 f=0.50 outside points unchanged
+PASS far 002828 pred 0 f=0.50 other cars change only by shared target points
+PASS far 002828 pred 0 f=0.75 num_points_before matches week-3 CSV
+PASS far 002828 pred 0 f=0.75 num_points_after = before - removed
+PASS far 002828 pred 0 f=0.75 deleted indices are inside the target
+PASS far 002828 pred 0 f=0.75 outside points unchanged
+PASS far 002828 pred 0 f=0.75 other cars change only by shared target points
+PASS far 002828 pred 0 f=1.00 num_points_before matches week-3 CSV
+PASS far 002828 pred 0 f=1.00 num_points_after = before - removed
+PASS far 002828 pred 0 f=1.00 deleted indices are inside the target
+PASS far 002828 pred 0 f=1.00 outside points unchanged
+PASS far 002828 pred 0 f=1.00 other cars change only by shared target points
+PASS far 002828 pred 0 f=1.00 f=1 interior count is 0
+PASS far 002828 pred 0 f=0.50 delete indices match on a second draw
+PASS sparse 007032 pred 1 f=0.00 num_points_before matches week-3 CSV
+PASS sparse 007032 pred 1 f=0.00 num_points_after = before - removed
+PASS sparse 007032 pred 1 f=0.00 deleted indices are inside the target
+PASS sparse 007032 pred 1 f=0.00 outside points unchanged
+PASS sparse 007032 pred 1 f=0.00 other cars change only by shared target points
+PASS sparse 007032 pred 1 f=0.00 f=0 cloud identical and num_removed=0
+PASS sparse 007032 pred 1 f=0.25 num_points_before matches week-3 CSV
+PASS sparse 007032 pred 1 f=0.25 num_points_after = before - removed
+PASS sparse 007032 pred 1 f=0.25 deleted indices are inside the target
+PASS sparse 007032 pred 1 f=0.25 outside points unchanged
+PASS sparse 007032 pred 1 f=0.25 other cars change only by shared target points
+PASS sparse 007032 pred 1 f=0.50 num_points_before matches week-3 CSV
+PASS sparse 007032 pred 1 f=0.50 num_points_after = before - removed
+PASS sparse 007032 pred 1 f=0.50 deleted indices are inside the target
+PASS sparse 007032 pred 1 f=0.50 outside points unchanged
+PASS sparse 007032 pred 1 f=0.50 other cars change only by shared target points
+PASS sparse 007032 pred 1 f=0.75 num_points_before matches week-3 CSV
+PASS sparse 007032 pred 1 f=0.75 num_points_after = before - removed
+PASS sparse 007032 pred 1 f=0.75 deleted indices are inside the target
+PASS sparse 007032 pred 1 f=0.75 outside points unchanged
+PASS sparse 007032 pred 1 f=0.75 other cars change only by shared target points
+PASS sparse 007032 pred 1 f=1.00 num_points_before matches week-3 CSV
+PASS sparse 007032 pred 1 f=1.00 num_points_after = before - removed
+PASS sparse 007032 pred 1 f=1.00 deleted indices are inside the target
+PASS sparse 007032 pred 1 f=1.00 outside points unchanged
+PASS sparse 007032 pred 1 f=1.00 other cars change only by shared target points
+PASS sparse 007032 pred 1 f=1.00 f=1 interior count is 0
+PASS sparse 007032 pred 1 f=0.50 delete indices match on a second draw
+PASS empty_box 007260 pred 8 f=0.00 num_points_before matches week-3 CSV
+PASS empty_box 007260 pred 8 f=0.00 num_points_after = before - removed
+PASS empty_box 007260 pred 8 f=0.00 deleted indices are inside the target
+PASS empty_box 007260 pred 8 f=0.00 outside points unchanged
+PASS empty_box 007260 pred 8 f=0.00 other cars change only by shared target points
+PASS empty_box 007260 pred 8 f=0.00 f=0 cloud identical and num_removed=0
+PASS empty_box 007260 pred 8 f=0.00 empty box left the cloud unchanged
+PASS empty_box 007260 pred 8 f=0.25 num_points_before matches week-3 CSV
+PASS empty_box 007260 pred 8 f=0.25 num_points_after = before - removed
+PASS empty_box 007260 pred 8 f=0.25 deleted indices are inside the target
+PASS empty_box 007260 pred 8 f=0.25 outside points unchanged
+PASS empty_box 007260 pred 8 f=0.25 other cars change only by shared target points
+PASS empty_box 007260 pred 8 f=0.25 empty box left the cloud unchanged
+PASS empty_box 007260 pred 8 f=0.50 num_points_before matches week-3 CSV
+PASS empty_box 007260 pred 8 f=0.50 num_points_after = before - removed
+PASS empty_box 007260 pred 8 f=0.50 deleted indices are inside the target
+PASS empty_box 007260 pred 8 f=0.50 outside points unchanged
+PASS empty_box 007260 pred 8 f=0.50 other cars change only by shared target points
+PASS empty_box 007260 pred 8 f=0.50 empty box left the cloud unchanged
+PASS empty_box 007260 pred 8 f=0.75 num_points_before matches week-3 CSV
+PASS empty_box 007260 pred 8 f=0.75 num_points_after = before - removed
+PASS empty_box 007260 pred 8 f=0.75 deleted indices are inside the target
+PASS empty_box 007260 pred 8 f=0.75 outside points unchanged
+PASS empty_box 007260 pred 8 f=0.75 other cars change only by shared target points
+PASS empty_box 007260 pred 8 f=0.75 empty box left the cloud unchanged
+PASS empty_box 007260 pred 8 f=1.00 num_points_before matches week-3 CSV
+PASS empty_box 007260 pred 8 f=1.00 num_points_after = before - removed
+PASS empty_box 007260 pred 8 f=1.00 deleted indices are inside the target
+PASS empty_box 007260 pred 8 f=1.00 outside points unchanged
+PASS empty_box 007260 pred 8 f=1.00 other cars change only by shared target points
+PASS empty_box 007260 pred 8 f=1.00 empty box left the cloud unchanged
+PASS empty_box 007260 pred 8 f=0.50 delete indices match on a second draw
+PASS mid 001116 pred 3 f=0.00 num_points_before matches week-3 CSV
+PASS mid 001116 pred 3 f=0.00 num_points_after = before - removed
+PASS mid 001116 pred 3 f=0.00 deleted indices are inside the target
+PASS mid 001116 pred 3 f=0.00 outside points unchanged
+PASS mid 001116 pred 3 f=0.00 other cars change only by shared target points
+PASS mid 001116 pred 3 f=0.00 f=0 cloud identical and num_removed=0
+PASS mid 001116 pred 3 f=0.25 num_points_before matches week-3 CSV
+PASS mid 001116 pred 3 f=0.25 num_points_after = before - removed
+PASS mid 001116 pred 3 f=0.25 deleted indices are inside the target
+PASS mid 001116 pred 3 f=0.25 outside points unchanged
+PASS mid 001116 pred 3 f=0.25 other cars change only by shared target points
+PASS mid 001116 pred 3 f=0.50 num_points_before matches week-3 CSV
+PASS mid 001116 pred 3 f=0.50 num_points_after = before - removed
+PASS mid 001116 pred 3 f=0.50 deleted indices are inside the target
+PASS mid 001116 pred 3 f=0.50 outside points unchanged
+PASS mid 001116 pred 3 f=0.50 other cars change only by shared target points
+PASS mid 001116 pred 3 f=0.75 num_points_before matches week-3 CSV
+PASS mid 001116 pred 3 f=0.75 num_points_after = before - removed
+PASS mid 001116 pred 3 f=0.75 deleted indices are inside the target
+PASS mid 001116 pred 3 f=0.75 outside points unchanged
+PASS mid 001116 pred 3 f=0.75 other cars change only by shared target points
+PASS mid 001116 pred 3 f=1.00 num_points_before matches week-3 CSV
+PASS mid 001116 pred 3 f=1.00 num_points_after = before - removed
+PASS mid 001116 pred 3 f=1.00 deleted indices are inside the target
+PASS mid 001116 pred 3 f=1.00 outside points unchanged
+PASS mid 001116 pred 3 f=1.00 other cars change only by shared target points
+PASS mid 001116 pred 3 f=1.00 f=1 interior count is 0
+PASS mid 001116 pred 3 f=0.50 delete indices match on a second draw
+PASS mid 001116 pred 3 f=0.00 f=0 iou=1.0000 score_after=0.8215 score_before=0.8216
+PASS far 002828 pred 0 f=0.00 f=0 iou=1.0000 score_after=0.9605 score_before=0.9605
+PASS near_dense 005560 pred 0 f=0.00 f=0 iou=1.0000 score_after=0.9892 score_before=0.9892
+PASS near_dense 005560 pred 0 f=1.00 f=1 forward returned
+PASS sparse 007032 pred 1 f=0.00 f=0 iou=1.0000 score_after=0.9464 score_before=0.9465
+PASS empty_box 007260 pred 8 f=0.00 f=0 iou=1.0000 score_after=0.5263 score_before=0.5264
+PASS training/velodyne bin size and mtime unchanged (7481 files)
+PASS result.pkl size and mtime unchanged
+failed: 0
+passed: 152

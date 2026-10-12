@@ -1,0 +1,13 @@
+Week 3 per-detection summary
+class: Car
+frames walked: 3769
+car predictions: 33133
+matched (3D IoU >= 0.50): 13458
+unmatched: 19675
+sensor range in meters (horizontal_lidar_xy): min=1.3239 median=36.0985 max=79.7616
+interior points in predicted box: min=0.0000 median=29.0000 max=12785.0000
+match_rule: independent_best_iou
+iou function: OpenPCDet d3_box_overlap (KITTI camera boxes, CPU rotate_iou)
+result.pkl: week-1 PointPillars val, Car moderate 3D AP@R11 = 77.2898
+prediction rows: PointPillars outputs after score >= 0.1
+do not bin these values this week

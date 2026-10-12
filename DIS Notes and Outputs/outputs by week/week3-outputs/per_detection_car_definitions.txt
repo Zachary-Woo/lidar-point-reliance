@@ -1,0 +1,17 @@
+Week 3 table definitions
+range_m: horizontal Euclidean distance of the predicted box center
+  from the lidar origin, sqrt(box_x^2 + box_y^2), lidar frame.
+  Not 3D Euclidean. Not camera Z.
+num_points_in_box: count of velodyne points inside the predicted box
+  using pcdet.ops.roiaware_pool3d.roiaware_pool3d_utils.points_in_boxes_cpu.
+  Full cloud, no FOV filter.
+gt_matched / iou_3d: independent best 3D IoU to a GT Car.
+  Function: d3_box_overlap on KITTI camera boxes [x,y,z,l,h,w,ry].
+  Threshold: 0.50. Unmatched rows have iou_3d=0 and empty gt_idx.
+  DontCare is ignored. Van / Pedestrian / Cyclist GT are not match targets.
+pred_idx: index into that frame's full detector output (all classes).
+gt_idx: index into that frame's non-DontCare GT list (gt_boxes_lidar rows).
+boxes: OpenPCDet boxes_lidar order [x,y,z,l,w,h,yaw].
+split: KITTI val only, 3769 frames from ImageSets/val.txt.
+detector: public PointPillars checkpoint pointpillar_7728.pth.
+prediction rows: post-processed detector outputs after score >= 0.1.
