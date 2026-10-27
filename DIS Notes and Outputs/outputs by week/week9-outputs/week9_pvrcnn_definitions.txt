@@ -1,0 +1,28 @@
+Week 9 PV-RCNN definitions
+detectors: PointPillars (one-stage) and PV-RCNN (two-stage)
+dataset: KITTI validation split, 3,769 frames, Car only
+PV-RCNN checkpoint: pv_rcnn_8369.pth
+checkpoint source: https://drive.google.com/file/d/1lIOq4Hxr0W3qsX83ilQv0nk1Cls6KAr-/view
+prediction and edited-forward batch size: 2
+eligibility: detector score >= 0.70 and predicted-box interior points >= 1
+population: eligibility is computed separately for each detector
+identity: pred_idx is local to one detector and is never joined across detectors
+range bins: 0-20 m, 20-40 m, 40 m or farther
+interior-point bins: 0-19, 20-99, 100 or more
+predicted-volume bins: under 8, 8 to under 12, 12 or more cubic meters
+fractions: 0.00, 0.25, 0.50, 0.75, 1.00
+seed: 6908
+num_removed: Python round(fraction * region_points), half even
+conditions: interior, same-size empty-region placebo, context
+one target box is edited per forward; every edit starts from the original cloud
+placebo coordinates are stored with float32 round-trip precision
+association: highest 3D IoU returned Car to that detector's original box
+association threshold: 0.50
+retained confidence: score_after / score_before on association, otherwise 0
+score survival: association and score_after >= 0.50
+IoU survival: association at 3D IoU >= 0.50
+live fraction-0 preflight: IoU >= 0.99 and absolute score delta < 0.01
+fraction-0 table rows: exact no-edit source predictions after the live preflight
+unavailable placebo rows remain in the result CSV with blank metrics
+unavailable placebo rows are excluded from placebo means
+scores are normalized within detector and are not pooled as equally calibrated
