@@ -1,0 +1,63 @@
+Week 11 definitions
+detector: PointPillars pointpillar_7728.pth
+config: tools/cfgs/kitti_models/pointpillar.yaml
+dataset: KITTI validation split, 3769 frames
+classes: Pedestrian and Cyclist, reported separately
+predictions: saved result.pkl, no new test.py run
+official 3D overlap: 0.50 for Pedestrian and for Cyclist
+association overlap: 0.50 to the original predicted box of the same class
+eligibility: score >= 0.70 and interior points >= 1
+ground-truth match: best 3D IoU to the same class at 0.50, not required
+range bins: 0-20 m, 20-40 m, 40 m or farther
+interior-point bins: 0-19, 20-99, 100 or more
+car volume cuts are not used
+volume rule: coarsest step in 1.00, 0.50, 0.20, 0.10, 0.05, 0.02, 0.01 m3 whose rounded one-third and two-thirds ranks leave three nonempty bins
+fractions: 0.00, 0.25, 0.50, 0.75, 1.00
+seed: 6908
+draw token: sha256("6908|<class>|<condition>|<frame_id>|<pred_idx>|<fraction>")
+num_removed: Python round(fraction * region_points), half even
+eval batch size: 4
+conditions: interior, same-size empty-region placebo, context
+placebo obstacles: every predicted box and every non-DontCare ground-truth box
+retained confidence: score_after / score_before on association, otherwise 0
+score survival: association and score_after >= 0.50
+published moderate 3D AP@R11: Pedestrian 52.29, Cyclist 62.68
+AP@R40 is recorded and is not compared with the published R11 numbers
+
+class: Pedestrian
+official 3D overlap: 0.50
+published moderate 3D AP@R11: 52.29
+reproduced 3D AP@R11 easy/moderate/hard: 57.7699 / 52.2951 / 47.9211
+reproduced 3D AP@R40 easy/moderate/hard: 57.3065 / 51.4480 / 46.8705
+moderate R11 absolute difference: 0.0051
+prediction rows: 23522
+prediction rows matched at 0.50: 1482
+eligible: 672
+eligible gt_matched: 551
+eligible by range: 0-20 m 566, 20-40 m 106, 40+ m 0
+eligible by points: 0-19 points 0, 20-99 points 145, 100+ points 527
+volume_low_m3: 0.80
+volume_high_m3: 1.20
+volume_step_m3: 0.20
+volume labels: under 0.80 m3 | 0.80 to under 1.20 m3 | 1.20 m3 or larger
+eligible by volume: under 0.80 m3 83, 0.80 to under 1.20 m3 493, 1.20 m3 or larger 96
+eligible volume min/median/max m3: 0.5198 / 1.0051 / 1.6702
+
+class: Cyclist
+official 3D overlap: 0.50
+published moderate 3D AP@R11: 62.68
+reproduced 3D AP@R11 easy/moderate/hard: 80.0568 / 62.7228 / 59.6707
+reproduced 3D AP@R40 easy/moderate/hard: 81.5683 / 62.9412 / 58.9595
+moderate R11 absolute difference: 0.0428
+prediction rows: 7285
+prediction rows matched at 0.50: 617
+eligible: 394
+eligible gt_matched: 348
+eligible by range: 0-20 m 201, 20-40 m 178, 40+ m 15
+eligible by points: 0-19 points 3, 20-99 points 178, 100+ points 213
+volume_low_m3: 1.50
+volume_high_m3: 2.00
+volume_step_m3: 0.50
+volume labels: under 1.50 m3 | 1.50 to under 2.00 m3 | 2.00 m3 or larger
+eligible by volume: under 1.50 m3 20, 1.50 to under 2.00 m3 270, 2.00 m3 or larger 104
+eligible volume min/median/max m3: 1.1466 / 1.8289 / 2.9192
