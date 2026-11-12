@@ -11,262 +11,199 @@
 
 A stratified study of evidence dependence in 3D detection confidence.
 
-One public KITTI checkpoint is held fixed. The measurement is how much its confidence depends on the LiDAR points inside a predicted box versus the surrounding scan, and whether that dependence is stronger when the object's own evidence is weak (far, sparse, or small). Nothing is trained. The detector weights are not edited.
+Public KITTI checkpoints are held fixed. The measurement is how much a detector's confidence depends on the LiDAR points inside a predicted box versus the surrounding scan, and whether that dependence is stronger when the object's own evidence is weak (far, sparse, or small). Nothing is trained. The detector weights are not edited.
 
-The primary run is PointPillars (`pointpillar_7728.pth`) on the KITTI val split, Car only. Official Car moderate 3D AP@R11 on the saved predictions is **77.2898** (published 77.28). Compare that R11 number only. Do not compare AP@R40 to 77.28.
+This is a semester research project (CAP 6908, Fall 2026). The report is being written in CVPR format and is not in this repository yet.
 
-## What a new machine has to fetch
+## Contents
 
-The git checkout contains the code. It does not contain the KITTI clouds or the PointPillars weights. Those stay out of git on purpose. Download the four archives and the one checkpoint below, then build the environment. Ubuntu 22.04 is the version this project compiles on. A newer Ubuntu (the first attempt was 26.04) fails while building OpenPCDet against this CUDA 12.1 stack. On Windows, install that distro from PowerShell:
+- [The measurement](#the-measurement)
+- [Results so far](#results-so-far)
+- [Repository layout](#repository-layout)
+- [Reproducing the numbers](#reproducing-the-numbers)
+- [Scripts and what they produce](#scripts-and-what-they-produce)
+- [Status](#status)
+- [Acknowledgements](#acknowledgements)
 
-```powershell
-wsl --install -d Ubuntu-22.04
-```
+## The measurement
 
-That install adds a Linux terminal inside Windows. Windows calls it WSL (Windows Subsystem for Linux). Open **Ubuntu 22.04** from the Start menu. That window is not PowerShell, and it is not File Explorer. It has its own files. `$HOME` in that window is the Linux home folder, not `C:\Users\...`.
+Each eligible detection (score at least 0.7, at least one LiDAR point inside the box) is edited on its own, one box per forward pass. The detector is run again on the edited cloud and the new prediction is matched back to the original box.
 
-Every command after this is typed in the Ubuntu window unless the block is marked PowerShell. Run `nvidia-smi` first. It needs to list a GPU before the rest of this is worth doing.
+| Edit | What is deleted | What it tests |
+| --- | --- | --- |
+| Interior | A fraction of the points inside the predicted box | Does the score need the object's own points? |
+| Placebo | The same fraction inside a same-sized box in empty space | Does deleting any same-sized patch move the score? |
+| Context | The same fraction of the points outside the box | Does the score need the surrounding scene? |
 
-Clone this repository onto the Linux filesystem.
+Fractions are 0, 0.25, 0.5, 0.75, and 1.
 
-```bash
-sudo apt update
-sudo apt install -y build-essential wget git unzip
-git clone https://github.com/Zachary-Woo/lidar-point-reliance.git "$HOME/lidar-point-reliance"
-```
+**Retained confidence** is the new score divided by the original score when a returned box still overlaps the original at 3D IoU 0.5, and 0 when none does. A miss stays in the mean. Results are broken out by three properties recorded for every box:
 
-The runnable code is `$HOME/lidar-point-reliance/OpenPCDet`. That folder already contains the CPU IoU fix and the measurement scripts. Do not replace it with a fresh clone of upstream OpenPCDet.
+- sensor range: 0–20 m, 20–40 m, 40 m and farther
+- interior point count: 0–19, 20–99, 100 and above
+- box volume: under 8 m³, 8–12 m³, 12 m³ and larger
 
-### KITTI archives
+## Results so far
 
-Download these four files from the [KITTI 3D object detection page](https://www.cvlibs.net/datasets/kitti/eval_object.php?obj_benchmark=3d). The page asks for an email address before the downloads start. These are the only KITTI files this project uses. Leave the right-camera images, the development kit, road planes, and depth maps alone.
+All numbers are on the KITTI val split (3,769 frames) and come from the summary files in [`DIS Notes and Outputs/outputs by week/`](DIS%20Notes%20and%20Outputs/outputs%20by%20week/).
 
+### Checkpoints reproduce the published AP
 
-| Zip                        | Button on that page                                                  | Size  |
-| -------------------------- | -------------------------------------------------------------------- | ----- |
-| `data_object_calib.zip`    | Download camera calibration matrices of object data set              | 16 MB |
-| `data_object_image_2.zip`  | Download left color images of object data set                        | 12 GB |
-| `data_object_label_2.zip`  | Download training labels of object data set                          | 5 MB  |
-| `data_object_velodyne.zip` | Download Velodyne point clouds, if you want to use laser information | 29 GB |
+| Detector | Checkpoint | Car moderate 3D AP@R11 | Published |
+| --- | --- | --- | --- |
+| PointPillars (one-stage) | `pointpillar_7728.pth` | 77.2898 | 77.28 |
+| PV-RCNN (two-stage) | `pv_rcnn_8369.pth` | 83.6974 | 83.61 |
 
+Compare the R11 numbers only. AP@R40 is a different number and does not match the published column.
 
-On a Windows plus Ubuntu setup, download and unpack these on Windows first, inside this project's `data/` folder. That folder is gitignored. Unpack each zip into its own directory so the Windows project contains:
+### Emptying the box costs more for far and sparse cars
+
+![Mean retained confidence against removal fraction for PointPillars cars, one panel per range bin, for the interior, placebo, and context edits](DIS%20Notes%20and%20Outputs/outputs%20by%20week/week7-outputs/images/retention_by_range.png)
+
+PointPillars, Car, 11,125 eligible boxes. Interior removal lowers retained confidence in every range bin, and the drop arrives sooner for farther cars. The placebo and context edits stay near 1.
+
+Mean retained confidence after all interior points are removed (fraction 1):
+
+| Bin | PointPillars *n* | PointPillars | PV-RCNN *n* | PV-RCNN |
+| --- | ---: | ---: | ---: | ---: |
+| 0–20 m | 4,864 | 0.193 | 5,496 | 0.228 |
+| 20–40 m | 4,868 | 0.149 | 7,110 | 0.103 |
+| 40 m and farther | 1,393 | 0.074 | 3,669 | 0.038 |
+| 0–19 points | 370 | 0.086 | 2,371 | 0.021 |
+| 20–99 points | 3,419 | 0.098 | 5,668 | 0.054 |
+| 100 points and above | 7,336 | 0.190 | 8,236 | 0.215 |
+| Under 8 m³ | 1,299 | 0.177 | 1,360 | 0.149 |
+| 8–12 m³ | 9,082 | 0.154 | 13,460 | 0.127 |
+| 12 m³ and larger | 744 | 0.178 | 1,455 | 0.151 |
+
+- Both detectors keep less confidence at longer range and on boxes with fewer interior points.
+- Box volume does not order the effect for either detector.
+- Each detector has its own eligible set, so the two columns are not paired box by box.
+
+### Neither control reproduces the drop
+
+At fraction 1, PointPillars placebo retention is between 0.999 and 1.000 in every bin, and context retention is between 1.014 and 1.059. The placebo region holds far fewer points than the car it is compared with, so it rules out deletion of an arbitrary same-sized patch. It does not rule out a deletion matched on point count.
+
+### Pedestrian and Cyclist
+
+PointPillars, 672 eligible pedestrians and 394 eligible cyclists. Mean retained confidence under interior removal:
+
+| Bin | Pedestrian 0.75 | Pedestrian 1.00 | Cyclist 0.75 | Cyclist 1.00 |
+| --- | ---: | ---: | ---: | ---: |
+| 0–20 m | 0.740 | 0.010 | 0.497 | 0.006 |
+| 20–40 m | 0.413 | 0.007 | 0.396 | 0.002 |
+| 40 m and farther | – | – | 0.252 | 0.000 |
+
+- The range ordering appears at partial removal.
+- Once the box is empty almost no confidence is left, unlike Car.
+- No eligible pedestrian lies beyond 40 m, and only 15 eligible cyclists do.
+
+### Ablations
+
+PointPillars, Car. Each row changes one setting of the reference protocol. Mean retained confidence at fraction 0.75:
+
+| Setting | 0–20 m | 20–40 m | 40 m+ | 0–19 pts | 20–99 pts | 100+ pts |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Reference | 0.929 | 0.770 | 0.618 | 0.519 | 0.667 | 0.908 |
+| Farthest-point removal | 0.953 | 0.811 | 0.700 | 0.625 | 0.724 | 0.933 |
+| Voxel-wise removal | 0.798 | 0.694 | 0.583 | 0.518 | 0.601 | 0.794 |
+| Eligibility floor 0.5 | 0.917 | 0.709 | 0.525 | 0.409 | 0.606 | 0.900 |
+| Eligibility floor 0.9 | 0.952 | 0.861 | 0.769 | 0.657 | 0.793 | 0.931 |
+| Overlap bar 0.3 | 0.930 | 0.773 | 0.653 | 0.576 | 0.679 | 0.908 |
+| Overlap bar 0.7 | 0.922 | 0.703 | 0.442 | 0.336 | 0.545 | 0.891 |
+| Nearest-center association | 0.930 | 0.783 | 0.676 | 0.592 | 0.698 | 0.909 |
+
+The settings change how much confidence is retained. They do not change which cars retain less: far below near and sparse below dense in every row. The two floor rows use different eligible sets (14,154 boxes at floor 0.5 and 5,883 at floor 0.9).
+
+### Limits
+
+- One dataset (KITTI). Car on two checkpoints; Pedestrian and Cyclist on PointPillars only.
+- The two checkpoints differ in training and operating point as well as architecture, so the Car comparison is not an isolated architecture effect.
+- The placebo is not matched on point count.
+- Ablations were run one at a time, on PointPillars cars only.
+
+## Repository layout
 
 ```text
-data/data_object_calib/training/calib/
-data/data_object_calib/testing/calib/
-data/data_object_image_2/training/image_2/
-data/data_object_image_2/testing/image_2/
-data/data_object_label_2/training/label_2/
-data/data_object_velodyne/training/velodyne/
-data/data_object_velodyne/testing/velodyne/
+README.md                    this file
+docs/SETUP.md                full setup walkthrough for a new machine
+OpenPCDet/                   OpenPCDet with one local fix and the measurement scripts
+  tools/week*.py             the measurement scripts (see the table below)
+  pcdet/.../rotate_iou.py    CPU replacement for the Numba CUDA IoU used by KITTI eval
+DIS Notes and Outputs/
+  outputs by week/           summaries, tables, and figures for each week (results of record)
 ```
 
-Each zip already contains `training/` and `testing/` paths, except the labels zip, which is training only. Leave the unpacked files on Windows. Ubuntu can read them from there. The `C:` drive, inside the Ubuntu window, is spelled `/mnt/c/`. A `D:` drive would be `/mnt/d/`. The rest of the path is the same folders, with `\` turned into `/`.
+Not in git: the KITTI data (`data/`), the checkpoints (`OpenPCDet/checkpoints/`), and the large per-forward working files (`OpenPCDet/output/`).
 
-A Windows folder like this:
+## Reproducing the numbers
 
-```text
-C:\Users\Zachary\Desktop\lidar point reliance\data
-```
+The full walkthrough is in [docs/SETUP.md](docs/SETUP.md). In short:
 
-is this path in Ubuntu:
-
-```text
-/mnt/c/Users/Zachary/Desktop/lidar point reliance/data
-```
-
-`Zachary` is a stand-in. Use your own Windows username, and use the real folder where the four zips were unpacked. Spaces stay in the path, so it has to be quoted. To have Ubuntu print the spelling for you, paste the Windows path into the Ubuntu window with single quotes:
-
-```bash
-wslpath -a 'C:\Users\Zachary\Desktop\lidar point reliance\data'
-```
-
-The line it prints is `WIN_DATA` below. The `ln -sfn` lines make shortcuts: the Ubuntu names point at the Windows folders. The files are not copied a second time. `data/kitti` has to stay where it is, because it already holds `ImageSets`. Point the shortcuts at `calib`, `image_2`, `label_2`, and `velodyne` inside `training/` and `testing/`. A shortcut of the whole `data/kitti` folder does not replace that existing folder, and the loader keeps reading an empty tree.
-
-```bash
-WIN_DATA="$(wslpath -a 'C:\Users\Zachary\Desktop\lidar point reliance\data')"
-KITTI="$HOME/lidar-point-reliance/OpenPCDet/data/kitti"
-mkdir -p "$KITTI/training" "$KITTI/testing"
-ln -sfn "$WIN_DATA/data_object_calib/training/calib" "$KITTI/training/calib"
-ln -sfn "$WIN_DATA/data_object_calib/testing/calib" "$KITTI/testing/calib"
-ln -sfn "$WIN_DATA/data_object_image_2/training/image_2" "$KITTI/training/image_2"
-ln -sfn "$WIN_DATA/data_object_image_2/testing/image_2" "$KITTI/testing/image_2"
-ln -sfn "$WIN_DATA/data_object_label_2/training/label_2" "$KITTI/training/label_2"
-ln -sfn "$WIN_DATA/data_object_velodyne/training/velodyne" "$KITTI/training/velodyne"
-ln -sfn "$WIN_DATA/data_object_velodyne/testing/velodyne" "$KITTI/testing/velodyne"
-```
-
-Replace the `C:\Users\Zachary\...` path with yours before running that block. `ls "$WIN_DATA"` should list the four `data_object_*` folders. A machine that has no Windows drive can skip the shortcuts and unzip the four archives directly in `$KITTI` instead.
-
-The tree that has to exist afterward:
-
-```text
-OpenPCDet/data/kitti/ImageSets/          # already in the repo, including val.txt
-OpenPCDet/data/kitti/training/calib/
-OpenPCDet/data/kitti/training/image_2/   # 7481 png files
-OpenPCDet/data/kitti/training/label_2/
-OpenPCDet/data/kitti/training/velodyne/  # 7481 bin files
-OpenPCDet/data/kitti/testing/calib/
-OpenPCDet/data/kitti/testing/image_2/
-OpenPCDet/data/kitti/testing/velodyne/
-```
-
-The measurement reads the training split. KITTI val is a subset of those 7481 frames. The info command below also walks `testing/`, so those folders have to be there too. Check the training image count before continuing:
-
-```bash
-find "$KITTI/training/image_2" -name '*.png' | wc -l
-```
-
-That count is 7481 when `image_2` landed in the right place. `assert img_file.exists()` from `create_kitti_infos` means a zip extracted somewhere else and the loader is still looking at an empty `image_2` folder.
-
-### PointPillars checkpoint
-
-Download the KITTI PointPillars weights from the OpenPCDet model zoo. The row is PointPillar, Car moderate 3D AP@R11 77.28, labeled model-18M:
-
-[https://drive.google.com/file/d/1wMxWTpU1qUoY3DsCH31WJmvJxcjFXKlm/view?usp=sharing](https://drive.google.com/file/d/1wMxWTpU1qUoY3DsCH31WJmvJxcjFXKlm/view?usp=sharing)
-
-The browser will not name the file `pointpillar_7728.pth`. On Windows, rename the download and save it in this project as `OpenPCDet/checkpoints/pointpillar_7728.pth`. That `checkpoints` folder is gitignored. From Ubuntu, make a shortcut to that Windows file. This is the same `/mnt/c/` spelling as the data folders above: `C:\Users\Zachary\Desktop\lidar point reliance\OpenPCDet\checkpoints\pointpillar_7728.pth` becomes `/mnt/c/Users/Zachary/Desktop/lidar point reliance/OpenPCDet/checkpoints/pointpillar_7728.pth`. Put your real Windows path inside the quotes.
-
-```bash
-mkdir -p "$HOME/lidar-point-reliance/OpenPCDet/checkpoints"
-ln -sfn "$(wslpath -a 'C:\Users\Zachary\Desktop\lidar point reliance\OpenPCDet\checkpoints\pointpillar_7728.pth')" \
-  "$HOME/lidar-point-reliance/OpenPCDet/checkpoints/pointpillar_7728.pth"
-```
-
-`test.py` and the later scripts look for that filename.
-
-## Environment
-
-This is the stack that compiled and ran: Python 3.9, torch 2.1.2+cu121, spconv-cu121, and the CUDA 12.1 toolkit from conda. Closing the terminal does not remove the env. Later sessions only need `conda activate pcdet`. The `CUDA_HOME` exports are for the compile.
-
-```bash
-wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-bash Miniconda3-latest-Linux-x86_64.sh -b -p "$HOME/miniconda3"
-source "$HOME/miniconda3/etc/profile.d/conda.sh"
-conda init bash
-source ~/.bashrc
-conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main
-conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r
-conda create -n pcdet python=3.9 -y
-conda activate pcdet
-pip install "numpy==1.26.4"
-pip install torch==2.1.2 torchvision==0.16.2 --index-url https://download.pytorch.org/whl/cu121
-pip install spconv-cu121
-conda install -c nvidia cuda-nvcc=12.1.105 cuda-cudart-dev=12.1.105 -y
-CONDA_OVERRIDE_CUDA=12.1 conda install -c nvidia/label/cuda-12.1.0 cuda-libraries-dev -y
-export CUDA_HOME="$CONDA_PREFIX"
-export PATH="$CUDA_HOME/bin:$PATH"
-export LIBRARY_PATH="$CONDA_PREFIX/lib:${CONDA_PREFIX}/targets/x86_64-linux/lib:${LIBRARY_PATH:-}"
-export CPATH="$CONDA_PREFIX/include:${CONDA_PREFIX}/targets/x86_64-linux/include:${CPATH:-}"
-nvcc --version
-cd "$HOME/lidar-point-reliance/OpenPCDet"
-pip install -r requirements.txt
-pip install "numpy==1.26.4"
-pip install av2==0.2.0
-pip install "kornia==0.5.8" --no-deps
-pip install -e . --no-build-isolation
-python -c "import pcdet; print(pcdet.__version__); print(pcdet.__file__)"
-```
-
-`nvcc --version` should report release 12.1. The import should print a `0.6.0` version and a path under `$HOME/lidar-point-reliance/OpenPCDet/pcdet/__init__.py`. `requirements.txt` can pull a newer NumPy, which is why 1.26.4 is installed again after it. `av2` is imported when the dataset package loads. `kornia` is installed with `--no-deps` so it does not replace the CUDA 12.1 torch build.
-
-## First run
-
-Build the KITTI info files once. This also writes the train and test info files and a ground-truth database. The file the study reads is `kitti_infos_val.pkl`.
+1. Use Ubuntu 22.04 with an NVIDIA GPU. On Windows that means WSL.
+2. Download four KITTI object archives and the two public checkpoints.
+3. Build the `pcdet` conda environment: Python 3.9, torch 2.1.2+cu121, spconv-cu121.
+4. Build the KITTI info files and run `test.py` once per checkpoint. Check the AP against the table above before going further.
+5. Run the measurement scripts in order from `OpenPCDet/tools`.
 
 ```bash
 conda activate pcdet
-cd "$HOME/lidar-point-reliance/OpenPCDet"
-python -m pcdet.datasets.kitti.kitti_dataset create_kitti_infos tools/cfgs/dataset_configs/kitti_dataset.yaml
-ls data/kitti/kitti_infos_val.pkl
-ls checkpoints/pointpillar_7728.pth
-```
-
-Run the pretrained checkpoint on the KITTI val split. This does not train.
-
-```bash
 cd "$HOME/lidar-point-reliance/OpenPCDet/tools"
-python test.py --cfg_file cfgs/kitti_models/pointpillar.yaml --batch_size 4 --ckpt "$HOME/lidar-point-reliance/OpenPCDet/checkpoints/pointpillar_7728.pth"
-```
-
-A finished run walks 3769 samples, loads the checkpoint, and writes
-
-`OpenPCDet/output/kitti_models/pointpillar/default/eval/epoch_7728/val/default/result.pkl`.
-
-The score to compare is Car moderate 3D AP@R11, which is **77.2898** against the published 77.28. Compare that R11 number only. Do not compare AP@R40 to 77.28. A `NumbaPerformanceWarning` about `parallel=True` is not a failure.
-
-## Local change inside OpenPCDet
-
-Stock KITTI eval computes rotated-box overlap with Numba CUDA. On WSL that path segfaults even when torch CUDA works. The replacement is already in this repo:
-
-`OpenPCDet/pcdet/datasets/kitti/kitti_object_eval_python/rotate_iou.py`
-
-The public function is still `rotate_iou_gpu_eval`. It now runs the same IoU on CPU Numba. `device_id` is accepted and ignored so existing callers stay valid. Identical boxes are treated as a full overlap, because the polygon clipper returns a bad area when two boxes share edges.
-
-`OpenPCDet/pcdet/datasets/kitti/kitti_object_eval_python/eval.py` is unchanged. It imports `rotate_iou_gpu_eval` and uses it for the BEV overlap inside 3D matching. A checkout of this repo already has the CPU version, so there is nothing to copy over.
-
-## Measurement scripts
-
-These commands run on Ubuntu, from `OpenPCDet/tools`, after `conda activate pcdet`.
-
-Each script already chooses the short result files. You do not sort or split them yourself. It writes those files into the Ubuntu copy of the repo:
-
-```text
-$HOME/lidar-point-reliance/DIS Notes and Outputs/outputs by week/week3-outputs/
-```
-
-The week number matches the script. That folder is on the Linux side, so File Explorer will not show it yet. The Windows project is a different copy of the same folders. After a script finishes, run this once in the Ubuntu window. It copies every weekly folder onto the Windows project. Change the `C:\Users\Zachary\...` path to the real Windows project folder, the same way as the data step above.
-
-```bash
-WIN_PROJECT="$(wslpath -a 'C:\Users\Zachary\Desktop\lidar point reliance')"
-mkdir -p "$WIN_PROJECT/DIS Notes and Outputs/outputs by week"
-cp -a "$HOME/lidar-point-reliance/DIS Notes and Outputs/outputs by week/." \
-  "$WIN_PROJECT/DIS Notes and Outputs/outputs by week/"
-```
-
-Then open the Windows project in File Explorer and go to `DIS Notes and Outputs`, then `outputs by week`, then the week folder. Those are the results. Run the same copy again after a later week. It refreshes the Windows folders.
-
-The script also keeps bigger working files in `OpenPCDet/output/` on Ubuntu, including `OpenPCDet/output/week3/per_detection_car.csv`. Later scripts read that Ubuntu folder. It is not copied to Windows, and OpenPCDet's `.gitignore` keeps it out of git. The weekly folders above are the files that go into the git repo. Commit them from the Windows project after the copy.
-
-Edits to a cloud are in memory. The scripts do not overwrite `training/velodyne` or `result.pkl`.
-
-**Per-detection table.** `week3_per_detection_table.py` walks every KITTI val frame in the saved predictions and writes one row per Car box: sensor range `sqrt(x^2+y^2)`, interior point count on the full velodyne cloud, box size, best 3D IoU to a Car ground-truth box, and a match flag at IoU 0.5. Raw IoU is stored so later scoring can use the official 0.7 overlap without rebuilding the table.
-
-```bash
 python week3_per_detection_table.py
-```
-
-Read `DIS Notes and Outputs/outputs by week/week3-outputs/`. That folder has `per_detection_car_sample.csv`, `per_detection_car_summary.txt`, and `per_detection_car_definitions.txt`. The full table stays on Ubuntu at `OpenPCDet/output/week3/per_detection_car.csv`: 3769 frames, 33133 Car rows, 13458 matched at 3D IoU >= 0.5. Later scripts read that Ubuntu file. It is not copied into the notes folder and it is not in the git repo.
-
-**Baseline stratification.** `week4_baseline_stratification.py` reads that table and the same `result.pkl`. Average precision is official KITTI 3D AP, with ground-truth cars outside a bin ignored. Confidence and expected calibration error are computed on the predictions. Bins are sensor range (0–20 m, 20–40 m, 40 m and farther), interior point count (0–19, 20–99, 100+), and box volume in cubic meters (under 8, 8–12, 12+).
-
-```bash
 python week4_baseline_stratification.py
-```
-
-Read `DIS Notes and Outputs/outputs by week/week4-outputs/week4_summary.txt`. The unstratified moderate AP@R11 there must still be 77.2898. Reliability diagrams are in that folder's `images/` directory: `reliability_range.png`, `reliability_num_points.png`, and `reliability_size.png`.
-
-**Intervention harness.** `week5_intervention_harness.py` is the correctness check. It deletes a fraction of the points inside one predicted box, runs PointPillars on that cloud, and associates the new Car box to the original prediction at 3D IoU 0.5. Fractions are 0, 0.25, 0.5, 0.75, and 1. The draw seed is 6908. The script forwards a five-target smoke set, not the full val split.
-
-```bash
 python week5_intervention_harness.py
-```
-
-Read `DIS Notes and Outputs/outputs by week/week5-outputs/week5_check_log.txt`. A good run has zero failed checks, fraction 0 reproduces the stored box, and the velodyne files are unchanged.
-
-**Pilot.** `week6_pilot.py` draws 200 high-confidence Car detections (score at least 0.7 and at least one interior point), stratified by range, and runs the same interior deletion. Retained confidence is the new score divided by the original score when the 0.5 IoU bar is met, and 0 when it is not. Score survival also requires the returned score to be at least 0.5.
-
-```bash
 python week6_pilot.py
-```
-
-Read `DIS Notes and Outputs/outputs by week/week6-outputs/week6_summary.txt`. The recorded decision on those definitions is GO.
-
-**Full stratified run.** `week7_stratified.py` applies the locked metrics to every eligible Car (11125 rows) under three edits: interior deletion, deletion inside a same-size empty box (placebo), and deletion of points outside the box (context). This is the long job, on the order of 10^5 forwards. A restart skips a cell that is already in the results CSV. `--draw-only` writes the target list and stops. `--max-targets` is a preflight and refuses the official output directory.
-
-```bash
 python week7_stratified.py
+python week9_cross_detector.py
+python week11_per_class.py
+python week12_strategies.py
+python week12_ablations.py --part draw
+python week12_ablations.py --part probe
+python week12_ablations.py --part strategy
+python week12_ablations.py --part floor
+python week12_ablations.py --part association
+python week12_ablations.py --part report
 ```
 
-Read `DIS Notes and Outputs/outputs by week/week7-outputs/`. `week7_summary.txt` has the marginal rates and `week7_table.csv` has every stratum, including the joint cells. Those files are the results of record. Do not launch this script to inspect them.
+Things to know before running:
+
+- Every script reads saved predictions and edits clouds in memory. No script overwrites a Velodyne file or `result.pkl`.
+- The long scripts (`week7`, `week9`, `week11`, `week12_ablations`) run from tens of thousands to a few hundred thousand forward passes each. They append one row per finished cell and resume from the finished rows when rerun.
+- `week11_per_class.py` and the forward parts of `week12_ablations.py` exit with code 75 when they pause. Rerun the same command.
+- The draw seed is 6908.
+- The summary files in `outputs by week/` are the results of record. Read them there; do not launch a long run to inspect a number.
+
+## Scripts and what they produce
+
+| Script | What it does | Results folder |
+| --- | --- | --- |
+| `week3_per_detection_table.py` | One row per predicted Car box: range, interior point count, box size, best IoU to ground truth | `week3-outputs` |
+| `week4_baseline_stratification.py` | AP, confidence, and calibration error by range, point count, and volume; reliability diagrams | `week4-outputs` |
+| `week5_intervention_harness.py` | Correctness check of the edit, the forward pass, and the association on a five-target smoke set | `week5-outputs` |
+| `week6_pilot.py` | 200-detection pilot that fixed the metric definitions | `week6-outputs` |
+| `week7_stratified.py` | Primary run: every eligible PointPillars Car under the interior, placebo, and context edits | `week7-outputs` |
+| `week9_cross_detector.py` | Same protocol on PV-RCNN, and the comparison with PointPillars | `week9-outputs` |
+| `week11_per_class.py` | Same protocol on PointPillars Pedestrian and Cyclist | `week11-outputs` |
+| `week12_strategies.py` | Removal strategies, association rules, and table math, with a self-test (numpy only) | – |
+| `week12_ablations.py` | Ablations: removal strategy, confidence thresholds, association rule | `week12-outputs` |
+
+From `week7` on, each results folder has a `*_summary.txt` with the headline numbers and a `*_table.csv` with every stratum. The locked settings are in that folder's definitions or sidecar file.
+
+## Status
+
+| Stage | State |
+| --- | --- |
+| Baseline stratification | Done |
+| Primary run and controls (PointPillars, Car) | Done |
+| Cross-architecture comparison (PV-RCNN) | Done |
+| Pedestrian and Cyclist | Done |
+| Ablations | Done |
+| Qualitative gallery | Not started |
+| Final tables and reproducibility check from committed code | Not started |
+| Final report | In progress |
+
+## Acknowledgements
+
+- Detection code and pretrained checkpoints: [OpenPCDet](https://github.com/open-mmlab/OpenPCDet), Apache 2.0. Its license is at [`OpenPCDet/LICENSE`](OpenPCDet/LICENSE).
+- Data: the [KITTI 3D object detection benchmark](https://www.cvlibs.net/datasets/kitti/eval_object.php?obj_benchmark=3d). KITTI is not redistributed here.
+- The measurement is written against the occlusion result in OccAM's Laser (Schinagl et al., CVPR 2022).
